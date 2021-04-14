@@ -135,6 +135,7 @@ header {
     margin-bottom: 2rem;
 
     color: var(--soft-blue);
+    box-shadow: 0 2px 3px black;
 }
 
 .card h3 {
