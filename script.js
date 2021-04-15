@@ -13,7 +13,7 @@ const transactions = [
     {
         id: 1,
         description: 'Luz',
-        amount: -50000,
+        amount: -50001,
         date: '23/01/2021',
     },
     {
@@ -25,28 +25,56 @@ const transactions = [
     {
         id: 3,
         description: 'Internet',
-        amount: -20000,
+        amount: -20015,
         date: '23/01/2021',
     },
     {
         id: 4,
         description: 'App',
-        amount: 20000,
+        amount: 200000,
         date: '23/01/2021',
     },]
 
-
 const Transactions = {
-    incomes() {
-        // somar as entradas
+    all: transactions, // atalho para todas as transações (refatorar depois)
+    add(transaction){
+        Transactions.all.push(transaction)
+        
+        App.reload()
     },
-    expences() {
-        // somar as saidas
-    },
-    total() {
-        // entradas menos - saídas
-    }
 
+    remove(index) {
+        Transactions.all.splice(index, 1)
+
+        App.reload()
+    },
+
+    incomes() {
+        let income = 0
+        // pegar todas as transações
+        Transactions.all.forEach(transactions => {
+            // verificar se a transação é maior que zero
+            // e somar a uma variável e retornar essa variável
+            if(transactions.amount > 0) {
+                income += transactions.amount;
+            }
+        })
+        return income;
+    },
+
+    expences() {
+        let expense = 0
+        Transactions.all.forEach(transactions => {
+            if(transactions.amount < 0 ) {
+                expense +=transactions.amount;
+            }
+        })
+        return expense;
+    },
+
+    total() {
+        return Transactions.incomes() + Transactions.expences()
+    }
 }
 
 // Subistituir os dados do HTML com os dados do JS
@@ -62,14 +90,14 @@ const DOM = {
 
     },
     innerHTMLTransaction(transactions) {
-        const cssClass = transactions.amount > 0 ? "income" : "expence"
+        const CSSclass = transactions.amount > 0 ? "income" : "expense"
 
         const amount = Utils.formatCurrency(transactions.amount)
 
 
         const html = `
         <td class="description">${transactions.description}</td>
-        <td class="${cssClass}">${transactions.amount}</td>
+        <td class="${CSSclass}">${amount}</td>
         <td class="date">${transactions.date}</td>
         <td>
             <img src="./assets/minus.svg" alt="Remover Transação">
@@ -77,15 +105,137 @@ const DOM = {
         `
 
         return html
+    },
+
+    updateBalance() {
+        document
+            .getElementById('incomeDisplay')
+            .innerHTML = Utils.formatCurrency(Transactions.incomes())
+        document
+            .getElementById('expenseDisplay')
+            .innerHTML = Utils.formatCurrency(Transactions.expences())
+        document
+            .getElementById('totalDisplay')
+            .innerHTML = Utils.formatCurrency(Transactions.total())
+    },
+    clearTransactions() {
+        DOM.transactionsContainer.innerHTML = ''
     }
 }
 
 const Utils = {
+    formatAmount(value) {
+        value = Number(value) * 100 // opcional value.replace(/\,\./g, "")
+
+        return value
+    },
+
+    formatDate(date) {
+        const splitedDate = date.split("-")
+
+        return `${splitedDate[2]}/${splitedDate[1]}/${splitedDate[0]}`
+    },
+
     formatCurrency(value) {
         const signal = Number(value) < 0 ? "-" : ""
+        
+        // expressão regular para pegar somente números
+        value = String(value).replace(/\D/g, "")
+
+        value = Number(value) / 100
+
+        value = value.toLocaleString("pt-BR", {
+            style: 'currency',
+            currency: 'BRL'
+        })
+
+        return signal + value
     }
 }
 
-transactions.forEach(function(transactions) {
-    DOM.addTransaction(transactions)
-})
+const Form = {
+    description: document.querySelector('input#description'),
+    amount: document.querySelector('input#amount'),
+    date: document.querySelector('input#date'),
+
+    getValues() {
+        return {
+            description: Form.description.value,
+            amount: Form.amount.value,
+            date: Form.date.value
+        }
+    },
+
+    validateField() {
+        const { description, amount, date } = Form.getValues()
+        if(description.trim() === "" || 
+        amount.trim() === "" || 
+        date.trim() === "") {
+            throw new Error("Por favor preencha todos os campos")
+        }
+    },
+
+    formatValues() {
+    let {description, amount, date} = Form.getValues()
+    
+        amount = Utils.formatAmount(amount)
+
+        date = Utils.formatDate(date)
+
+        return {
+            description,
+            amount,
+            date
+        }
+    },
+    
+    saveTransaction(transaction) {
+        Transactions.add(transaction)
+    },
+
+    clearFields() {
+        Form.description.value = ''
+        Form.amount.value = ''
+        Form.date.value = ''
+    },
+
+    submit(event) {
+        event.preventDefault()
+
+
+        try {
+        // verificar se todas as informações foram preenchidas
+        Form.validateField()
+        // formatar os dados para salvar
+        const transaction = Form.formatValues()
+        // salvar
+        Form.saveTransaction(transaction)
+        // apagar os dados do formulário
+        Form.clearFields()
+        // fechar modal
+        Modal()
+        
+        } catch (error) {
+            alert(error.message)
+        }
+    }
+}
+const App = {
+    init() {
+
+        Transactions.all.forEach(transactions => {
+            DOM.addTransaction(transactions)
+        })
+        
+        DOM.updateBalance()
+        
+
+    },
+    
+    reload() {
+        DOM.clearTransactions()
+        App.init()
+    },
+}
+
+App.init()
