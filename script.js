@@ -44,7 +44,7 @@ const Storage = {
 }
 
 const Transactions = {
-    all: Storage.get(), // atalho para todas as transações (refatorar depois)
+    all: Storage.get(), // atalho para const transactions, antes da const Storage ser criada
 
     add(transaction){
         Transactions.all.push(transaction)
@@ -137,7 +137,7 @@ const DOM = {
 
 const Utils = {
     formatAmount(value) {
-        value = Number(value) * 100 // opcional value.replace(/\,\./g, "")
+        value = Number(value) * 100
 
         return Math.round(value)
     },
