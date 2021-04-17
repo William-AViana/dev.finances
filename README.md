@@ -1,6 +1,6 @@
 <h1 align="center">
     <img alt="dev.finances" title="dev.finances" src="./.github/logo.svg" style="width:260px;">
-<h1>
+</h1>
 
 <p align="center">
     <a href="#tecnologias">Tecnologias</a>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
