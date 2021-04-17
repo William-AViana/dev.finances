@@ -36,4 +36,7 @@
 
 <h2 id="licença">Licença</h2>
 
-<p>Esse projeto está sob a licença MIT. Veja o arquivo <a href="https://github.com/William-AViana/dev.finances/blob/main/LICENSE">LICENSE</a> para mais detalhes.
+<p>Esse projeto está sob a licença MIT. Veja o arquivo <a href="https://github.com/William-AViana/dev.finances/blob/main/LICENSE">LICENSE</a> para mais detalhes.</p>
+
+<h2>☁️ Deploy:</h2>
+https://william-aviana.github.io/dev.finances/
